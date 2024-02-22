@@ -1,6 +1,7 @@
 import { IsBoolean, IsISO8601, IsString } from 'class-validator';
 import { BaseModel } from 'src/common/entity/base.entity';
-import { Column, Entity } from 'typeorm';
+import { UsersModel } from 'src/users/entity/users.entity';
+import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity()
 export class HomeworksModel extends BaseModel {
@@ -19,4 +20,7 @@ export class HomeworksModel extends BaseModel {
   @Column({ default: false })
   @IsBoolean()
   isDone: boolean;
+
+  @ManyToOne(() => UsersModel, (user) => user.homeworks)
+  child: UsersModel;
 }
