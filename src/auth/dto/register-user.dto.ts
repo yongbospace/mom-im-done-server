@@ -5,4 +5,5 @@ export class RegisterUserDto extends PickType(UsersModel, [
   'nickname',
   'email',
   'password',
+  'role',
 ]) {}

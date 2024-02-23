@@ -3,7 +3,6 @@ import { HomeworksModel } from './entity/homeworks.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateHomeworkDto } from './dto/create-homework.dto';
-import { NotFoundError } from 'rxjs';
 import { UpdateHomeworkDto } from './dto/update-homework.dto';
 
 @Injectable()
@@ -13,14 +12,25 @@ export class HomeworksService {
     private readonly homeworksRepository: Repository<HomeworksModel>,
   ) {}
 
-  async createHomework(dto: CreateHomeworkDto) {
+  async createHomework(
+    userId: number,
+    childId: number,
+    dto: CreateHomeworkDto,
+  ) {
     return await this.homeworksRepository.save({
       ...dto,
+      child: {
+        id: childId,
+      },
     });
   }
 
   getAllHomeworks() {
-    return this.homeworksRepository.find();
+    return this.homeworksRepository.find({
+      relations: {
+        child: true,
+      },
+    });
   }
 
   async getHomeworkById(homeworkId: number) {

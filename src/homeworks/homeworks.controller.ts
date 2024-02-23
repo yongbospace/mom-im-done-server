@@ -7,20 +7,18 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { HomeworksService } from './homeworks.service';
 import { CreateHomeworkDto } from './dto/create-homework.dto';
 import { UpdateHomeworkDto } from './dto/update-homework.dto';
+import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
+import { User } from 'src/users/decorator/user.decorator';
+import { UsersModel } from 'src/users/entity/users.entity';
 
 @Controller('homeworks')
 export class HomeworksController {
   constructor(private readonly homeworksService: HomeworksService) {}
-
-  @Post()
-  async postHomework(@Body() body: CreateHomeworkDto) {
-    const homework = await this.homeworksService.createHomework(body);
-    return homework;
-  }
 
   @Get()
   getHomeworks() {
@@ -30,6 +28,21 @@ export class HomeworksController {
   @Get(':homeworkId')
   getHomework(@Param('homeworkId', ParseIntPipe) homeworkId: number) {
     return this.homeworksService.getHomeworkById(homeworkId);
+  }
+
+  @Post(':childId')
+  @UseGuards(AccessTokenGuard)
+  async postHomework(
+    @User() user: UsersModel,
+    @Body() body: CreateHomeworkDto,
+    @Param('childId', ParseIntPipe) childId: number,
+  ) {
+    const homework = await this.homeworksService.createHomework(
+      user.id,
+      childId,
+      body,
+    );
+    return homework;
   }
 
   @Patch(':homeworkId')
