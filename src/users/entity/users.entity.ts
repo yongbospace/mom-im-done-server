@@ -1,16 +1,10 @@
 import { Exclude } from 'class-transformer';
 import { IsEmail, IsString } from 'class-validator';
 import { BaseModel } from 'src/common/entity/base.entity';
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  OneToOne,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { RolesEnum } from '../const/roles.const';
 import { HomeworksModel } from 'src/homeworks/entity/homeworks.entity';
+import { UserFamilyModel } from './user-family.entity';
 
 @Entity()
 export class UsersModel extends BaseModel {
@@ -40,12 +34,10 @@ export class UsersModel extends BaseModel {
   @OneToMany(() => HomeworksModel, (homework) => homework.child)
   homeworks: HomeworksModel[];
 
-  @ManyToMany(() => UsersModel, (user) => user.children)
-  @JoinTable()
-  parents: UsersModel[];
-
-  @ManyToMany(() => UsersModel, (user) => user.parents)
-  children: UsersModel[];
+  @ManyToOne(() => UserFamilyModel, (family) => family.users, {
+    nullable: true,
+  })
+  family: UserFamilyModel;
 
   @Column({ default: 0 })
   score: number;

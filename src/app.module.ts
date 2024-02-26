@@ -16,6 +16,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { HomeworksModule } from './homeworks/homeworks.module';
 import { UsersModel } from './users/entity/users.entity';
 import { HomeworksModel } from './homeworks/entity/homeworks.entity';
+import { UserFamilyModel } from './users/entity/user-family.entity';
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { HomeworksModel } from './homeworks/entity/homeworks.entity';
       username: process.env[ENV_DB_USERNAME_KEY],
       password: process.env[ENV_DB_PASSWORD_KEY],
       database: process.env[ENV_DB_DATABASE_KEY],
-      entities: [HomeworksModel, UsersModel],
+      entities: [HomeworksModel, UsersModel, UserFamilyModel],
       synchronize: true, //개발: true, 프로덕션: false
     }),
     UsersModule,

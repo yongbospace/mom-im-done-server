@@ -30,18 +30,13 @@ export class HomeworksController {
     return this.homeworksService.getHomeworkById(homeworkId);
   }
 
-  @Post(':childId')
+  @Post()
   @UseGuards(AccessTokenGuard)
   async postHomework(
     @User() user: UsersModel,
     @Body() body: CreateHomeworkDto,
-    @Param('childId', ParseIntPipe) childId: number,
   ) {
-    const homework = await this.homeworksService.createHomework(
-      user.id,
-      childId,
-      body,
-    );
+    const homework = await this.homeworksService.createHomework(user.id, body);
     return homework;
   }
 

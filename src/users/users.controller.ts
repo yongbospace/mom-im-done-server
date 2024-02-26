@@ -1,9 +1,11 @@
 import {
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -20,18 +22,24 @@ export class UsersController {
     return this.usersService.getUsers();
   }
 
-  @Get('child/me')
+  @Get('family/me')
   @UseGuards(AccessTokenGuard)
-  async getChildren(@User() user: UsersModel) {
-    return this.usersService.getChildren(user.id);
+  async getFamily(@User() user: UsersModel) {
+    return await this.usersService.getFamilyByUser(user.id);
   }
 
-  @Post('/child/:childId')
+  @Post('/family')
   @UseGuards(AccessTokenGuard)
-  async postChild(
+  async postJoinFamily(
     @User() user: UsersModel,
-    @Param('childId', ParseIntPipe) childId: number,
+    @Query('relativeId') relativeId?: number,
   ) {
-    return await this.usersService.takeChild(user.id, childId);
+    return await this.usersService.joinFamily(user.id, relativeId);
+  }
+
+  @Delete('/family')
+  @UseGuards(AccessTokenGuard)
+  async deleteFamily(@User() user: UsersModel) {
+    return await this.usersService.leaveFamily(user.id);
   }
 }

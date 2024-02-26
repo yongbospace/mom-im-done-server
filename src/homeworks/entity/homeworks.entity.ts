@@ -22,5 +22,8 @@ export class HomeworksModel extends BaseModel {
   isDone: boolean;
 
   @ManyToOne(() => UsersModel, (user) => user.homeworks)
+  author: UsersModel;
+
+  @ManyToOne(() => UsersModel, (user) => user.homeworks)
   child: UsersModel;
 }
