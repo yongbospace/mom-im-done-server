@@ -16,12 +16,9 @@ export class UsersService {
     @InjectRepository(UserFamilyModel)
     private readonly userFamilyRepository: Repository<UserFamilyModel>,
   ) {}
-  getUsers() {
+  getAllUsers() {
     return this.usersRepository.find({
-      relations: {
-        homeworks: true,
-        family: true,
-      },
+      relations: ['homeworks', 'family'],
     });
   }
 
@@ -29,18 +26,14 @@ export class UsersService {
     user: Pick<UsersModel, 'nickname' | 'email' | 'password' | 'role'>,
   ) {
     const nicknameExists = await this.usersRepository.exists({
-      where: {
-        nickname: user.nickname,
-      },
+      where: { nickname: user.nickname },
     });
     if (nicknameExists) {
       throw new BadRequestException('이미 존재하는 별명입니다.');
     }
 
     const emailExists = await this.usersRepository.exists({
-      where: {
-        email: user.email,
-      },
+      where: { email: user.email },
     });
     if (emailExists) {
       throw new BadRequestException('이미 존재하는 E-mail입니다.');

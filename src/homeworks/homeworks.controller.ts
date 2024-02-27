@@ -15,12 +15,16 @@ import { UpdateHomeworkDto } from './dto/update-homework.dto';
 import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
 import { User } from 'src/users/decorator/user.decorator';
 import { UsersModel } from 'src/users/entity/users.entity';
+import { Roles } from 'src/users/decorator/roles.decorator';
+import { RolesEnum } from 'src/users/const/roles.const';
+import { IsPublic } from 'src/common/decorator/is-public-decorator';
 
 @Controller('homeworks')
 export class HomeworksController {
   constructor(private readonly homeworksService: HomeworksService) {}
 
   @Get()
+  @IsPublic()
   getHomeworks() {
     return this.homeworksService.getAllHomeworks();
   }
@@ -54,6 +58,7 @@ export class HomeworksController {
   }
 
   @Delete(':homeworkId')
+  @Roles(RolesEnum.ADMIN)
   deleteHomework(@Param('homeworkId', ParseIntPipe) homeworkId: number) {
     return this.homeworksService.deleteHomework(homeworkId);
   }

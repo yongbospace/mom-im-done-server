@@ -56,27 +56,22 @@ export class HomeworksService {
     }
 
     if (user.family.id !== child.family.id) {
-      throw new UnauthorizedException(
-        '같은 가족에게만 숙제를 부여할 수 있습니다.',
-      );
+      throw new UnauthorizedException('숙제는 가족내에서 설정 가능합니다.');
     }
 
-    return await this.homeworksRepository.save({
+    const homework = this.homeworksRepository.create({
       ...dto,
-      author: {
-        id: userId,
-      },
-      child: {
-        id: dto.childId,
-      },
+      author: { id: userId },
+      child: { id: dto.childId },
     });
+
+    const newHomework = await this.homeworksRepository.save(homework);
+    return newHomework;
   }
 
   async updateHomework(homeworkId: number, dto: UpdateHomeworkDto) {
     const homework = await this.homeworksRepository.findOne({
-      where: {
-        id: homeworkId,
-      },
+      where: { id: homeworkId },
     });
 
     const { title, range, dueDate } = dto;
@@ -95,7 +90,6 @@ export class HomeworksService {
     }
 
     const newHomework = await this.homeworksRepository.save(homework);
-
     return newHomework;
   }
 

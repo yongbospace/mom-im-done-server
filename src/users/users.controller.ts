@@ -1,12 +1,12 @@
 import {
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
-  Param,
-  ParseIntPipe,
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersModel } from './entity/users.entity';
@@ -19,7 +19,7 @@ export class UsersController {
 
   @Get()
   getUsers() {
-    return this.usersService.getUsers();
+    return this.usersService.getAllUsers();
   }
 
   @Get('family/me')
@@ -42,4 +42,11 @@ export class UsersController {
   async deleteFamily(@User() user: UsersModel) {
     return await this.usersService.leaveFamily(user.id);
   }
+}
+function UserInterceptor(
+  target: UsersController,
+  propertyKey: 'getUsers',
+  descriptor: TypedPropertyDescriptor<() => Promise<UsersModel[]>>,
+): void | TypedPropertyDescriptor<() => Promise<UsersModel[]>> {
+  throw new Error('Function not implemented.');
 }
