@@ -30,12 +30,18 @@ export class HomeworksController {
   }
 
   @Get(':homeworkId')
-  getHomework(@Param('homeworkId', ParseIntPipe) homeworkId: number) {
+  getHomeworkByHomeworkId(
+    @Param('homeworkId', ParseIntPipe) homeworkId: number,
+  ) {
     return this.homeworksService.getHomeworkById(homeworkId);
   }
 
+  @Get('child/me')
+  getHomeworkByChild(@User() user: UsersModel) {
+    return this.homeworksService.getHomeworkByChild(user.id);
+  }
+
   @Post()
-  @UseGuards(AccessTokenGuard)
   async postHomework(
     @User() user: UsersModel,
     @Body() body: CreateHomeworkDto,
@@ -45,21 +51,29 @@ export class HomeworksController {
   }
 
   @Patch(':homeworkId')
+  @Roles(RolesEnum.ADMIN && RolesEnum.PARENT)
   patchHomework(
+    @User() user: UsersModel,
     @Param('homeworkId', ParseIntPipe) homeworkId: number,
     @Body() body: UpdateHomeworkDto,
   ) {
-    return this.homeworksService.updateHomework(homeworkId, body);
+    return this.homeworksService.updateHomework(user.id, homeworkId, body);
   }
 
   @Patch(':homeworkId/do')
-  doHomework(@Param('homeworkId', ParseIntPipe) homeworkId: number) {
-    return this.homeworksService.doHomework(homeworkId);
+  doHomework(
+    @User() user: UsersModel,
+    @Param('homeworkId', ParseIntPipe) homeworkId: number,
+  ) {
+    return this.homeworksService.doHomework(user.id, homeworkId);
   }
 
   @Delete(':homeworkId')
-  @Roles(RolesEnum.ADMIN)
-  deleteHomework(@Param('homeworkId', ParseIntPipe) homeworkId: number) {
-    return this.homeworksService.deleteHomework(homeworkId);
+  @Roles(RolesEnum.ADMIN && RolesEnum.PARENT)
+  deleteHomework(
+    @User() user: UsersModel,
+    @Param('homeworkId', ParseIntPipe) homeworkId: number,
+  ) {
+    return this.homeworksService.deleteHomework(user.id, homeworkId);
   }
 }

@@ -106,7 +106,7 @@ export class UsersService {
 
       if (relativeFamily) {
         throw new BadRequestException(
-          'user, relative 모두 이미 가족이 설정되어 있습니다.',
+          'user, relative 모두 가족이 설정되어 있습니다.',
         );
       }
 
