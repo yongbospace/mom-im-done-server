@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { HomeworksService } from './homeworks.service';
@@ -18,15 +19,18 @@ import { UsersModel } from 'src/users/entity/users.entity';
 import { Roles } from 'src/users/decorator/roles.decorator';
 import { RolesEnum } from 'src/users/const/roles.const';
 import { IsPublic } from 'src/common/decorator/is-public-decorator';
+import { ApiTags } from '@nestjs/swagger';
+import { PaginateHomeworkDto } from './dto/paginate-homework.dto';
 
+@ApiTags('homeworks')
 @Controller('homeworks')
 export class HomeworksController {
   constructor(private readonly homeworksService: HomeworksService) {}
 
   @Get()
   @IsPublic()
-  getHomeworks() {
-    return this.homeworksService.getAllHomeworks();
+  getHomeworks(@Query() query: PaginateHomeworkDto) {
+    return this.homeworksService.paginateHomework(query);
   }
 
   @Get(':homeworkId')
@@ -75,5 +79,12 @@ export class HomeworksController {
     @Param('homeworkId', ParseIntPipe) homeworkId: number,
   ) {
     return this.homeworksService.deleteHomework(user.id, homeworkId);
+  }
+
+  // Test Homeworks 생성
+  @Post('random/generate')
+  async postRandomHomeworks(@User() user: UsersModel) {
+    await this.homeworksService.generateHomeworks(user.id);
+    return true;
   }
 }

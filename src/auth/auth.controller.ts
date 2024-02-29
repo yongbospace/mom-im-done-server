@@ -4,7 +4,9 @@ import { RegisterUserDto } from './dto/register-user.dto';
 import { BasicTokenGuard } from './guard/basic-token.guard';
 import { RefreshTokenGuard } from './guard/bearer-token.guard';
 import { IsPublic } from 'src/common/decorator/is-public-decorator';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

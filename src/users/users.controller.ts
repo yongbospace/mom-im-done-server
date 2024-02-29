@@ -12,7 +12,9 @@ import { UsersService } from './users.service';
 import { UsersModel } from './entity/users.entity';
 import { User } from './decorator/user.decorator';
 import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
