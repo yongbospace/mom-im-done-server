@@ -12,6 +12,10 @@ async function bootstrap() {
       transform: true,
       // Query 타입 자동변환: string => number
       transformOptions: { enableImplicitConversion: true },
+      // Decorator가 적용되지 않은 모든 프로퍼티를 삭제 (ex)@안된 쿼리삭제
+      whitelist: true,
+      // whitelist에 따라 error 발생 시키기
+      forbidNonWhitelisted: true,
     }),
   );
 

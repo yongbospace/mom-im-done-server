@@ -8,12 +8,10 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { HomeworksService } from './homeworks.service';
 import { CreateHomeworkDto } from './dto/create-homework.dto';
 import { UpdateHomeworkDto } from './dto/update-homework.dto';
-import { AccessTokenGuard } from 'src/auth/guard/bearer-token.guard';
 import { User } from 'src/users/decorator/user.decorator';
 import { UsersModel } from 'src/users/entity/users.entity';
 import { Roles } from 'src/users/decorator/roles.decorator';
@@ -79,12 +77,5 @@ export class HomeworksController {
     @Param('homeworkId', ParseIntPipe) homeworkId: number,
   ) {
     return this.homeworksService.deleteHomework(user.id, homeworkId);
-  }
-
-  // Test Homeworks 생성
-  @Post('random/generate')
-  async postRandomHomeworks(@User() user: UsersModel) {
-    await this.homeworksService.generateHomeworks(user.id);
-    return true;
   }
 }

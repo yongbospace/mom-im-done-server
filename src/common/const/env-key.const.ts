@@ -1,5 +1,5 @@
 // 서버 프로토콜 : http / https
-export const ENV_PROTOCOL_KEY = 'protocal';
+export const ENV_PROTOCOL_KEY = 'PROTOCOL';
 // 서버 호스트 : localhost:3000
 export const ENV_HOST_KEY = 'HOST';
 

@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { HomeworksModel } from './entity/homeworks.entity';
-import { FindOptionsWhere, LessThan, MoreThan, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateHomeworkDto } from './dto/create-homework.dto';
 import { UpdateHomeworkDto } from './dto/update-homework.dto';
@@ -14,6 +14,7 @@ import { RolesEnum } from 'src/users/const/roles.const';
 import { PaginateHomeworkDto } from './dto/paginate-homework.dto';
 import { URL } from 'url';
 import { HOST, PROTOCOL } from 'src/common/const/env.const';
+import { CommonService } from 'src/common/common.service';
 
 @Injectable()
 export class HomeworksService {
@@ -21,15 +22,8 @@ export class HomeworksService {
     @InjectRepository(HomeworksModel)
     private readonly homeworksRepository: Repository<HomeworksModel>,
     private readonly usersService: UsersService,
+    private readonly commonService: CommonService,
   ) {}
-
-  // [pagination으로 변경]
-  //
-  // getAllHomeworks() {
-  //   return this.homeworksRepository.find({
-  //     relations: ['author', 'child'],
-  //   });
-  // }
 
   async getHomeworkById(homeworkId: number) {
     const homework = await this.homeworksRepository.findOne({
@@ -73,7 +67,6 @@ export class HomeworksService {
       author: { id: userId },
       child: { id: dto.childId },
     });
-
     const newHomework = await this.homeworksRepository.save(homework);
     return newHomework;
   }
@@ -149,70 +142,12 @@ export class HomeworksService {
     return `id: ${homeworkId} was deleted.`;
   }
 
-  // Test Homeworks 생성
-  async generateHomeworks(userId: number) {
-    for (let i = 0; i < 50; i++) {
-      await this.createHomework(userId, {
-        title: `테스트 ${i + 1}`,
-        range: `${i + 1} 장`,
-        dueDate: '2024-02-29',
-        childId: 7,
-      });
-    }
-  }
-
-  /**
-   * <Response>
-   *    date: Data[],
-   *    cursor: { after : 마지막 data의 ID}
-   *    count: 응답한 데이터 갯수
-   *    next: 다음 요청시 사용할 URL
-   */
   async paginateHomework(dto: PaginateHomeworkDto) {
-    const where: FindOptionsWhere<HomeworksModel> = {};
-
-    if (dto.where__id_less_than) {
-      where.id = LessThan(dto.where__id_less_than);
-    } else if (dto.where__id_more_than) {
-      where.id = MoreThan(dto.where__id_more_than);
-    }
-
-    const homeworks = await this.homeworksRepository.find({
-      where,
-      order: { createdAt: dto.order__createAt },
-      take: dto.take,
-    });
-
-    // 해당 데이터가 > 0 일때 '마지막 포스터' 아니면 null 반환
-    const lastItem =
-      homeworks.length > 0 && homeworks.length === dto.take
-        ? homeworks[homeworks.length - 1]
-        : null;
-
-    const nextUrl = lastItem && new URL(`${PROTOCOL}://${HOST}/homeworks`);
-
-    if (nextUrl) {
-      for (const key of Object.keys(dto)) {
-        if (key !== 'where__id_more_than' && key !== 'where__id_less_than') {
-          nextUrl.searchParams.append(key, dto[key]);
-        }
-      }
-
-      let key = null;
-      if (dto.order__createAt === 'ASC') {
-        key = 'where__id_more_than';
-      } else {
-        key = 'where__id_less_than';
-      }
-
-      nextUrl.searchParams.append(key, lastItem.id.toString());
-    }
-
-    return {
-      date: homeworks,
-      cursor: { after: lastItem?.id ?? null },
-      count: homeworks.length,
-      next: nextUrl?.toString() ?? null,
-    };
+    return this.commonService.paginate(
+      dto,
+      this.homeworksRepository,
+      { relations: ['author', 'child'] },
+      'homeworks',
+    );
   }
 }
